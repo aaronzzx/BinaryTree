@@ -5,13 +5,21 @@ import java.util.*
 import kotlin.math.max
 
 /**
+ * 二叉树实现类
+ *
  * @author aaronzzxup@gmail.com
  * @since 2021/12/1
  */
 open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
 
+    /**
+     * 根节点
+     */
     protected open var root: ITreeNode<E>? = null
 
+    /**
+     * 总节点数量，仅内部可修改
+     */
     override var size: Int = 0
         protected set
 
@@ -28,16 +36,23 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         return getHeightByTraversal(root)
     }
 
+    /**
+     * 递归方式获取节点高度
+     */
     protected fun getHeightByRecursive(node: ITreeNode<E>?): Int {
         node ?: return 0
         return 1 + max(getHeightByRecursive(node.left), getHeightByRecursive(node.right))
     }
 
+    /**
+     * 遍历方式获取节点高度
+     */
     protected fun getHeightByTraversal(node: ITreeNode<E>?): Int {
         node ?: return 0
         var height = 0
-        var levelSize = 1
+        var levelSize = 1 // 每一层节点数量
         simpleLevelOrderTraversal(node) { queue ->
+            // 每一轮遍历层节点数量都需要减一
             levelSize--
             val poll = queue.poll()
             if (poll.left != null) {
@@ -46,6 +61,7 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
             if (poll.right != null) {
                 queue.offer(poll.right)
             }
+            // 当层节点数量为零时代表遍历完一层，于是高度加一
             if (levelSize == 0) {
                 levelSize = queue.size
                 height++
@@ -55,11 +71,15 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         return height
     }
 
+    /**
+     * 满二叉树定义：所有节点的度要么为 0 要么为 2
+     */
     override fun isFull(): Boolean {
         val node = root ?: return false
         var isFull = true
         simpleLevelOrderTraversal(node) { queue ->
             val poll = queue.poll()
+            // 非叶子节点或度不为 2 则树不为满二叉树
             if (!(poll.isLeaf || poll.hasTwoChildren)) {
                 isFull = false
                 return@simpleLevelOrderTraversal true
@@ -75,6 +95,12 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         return isFull
     }
 
+    /**
+     * 完美二叉树定义：除叶子节点外其他节点的度都为 2 ，并且所有叶子节点都在最后一层。
+     * 可通过公式判断是否为完美二叉树：
+     *     h = 树的高度
+     *     Perfect's size == (2^h) - 1
+     */
     override fun isPerfect(): Boolean {
         val height = height()
         if (height == 0) {
@@ -83,12 +109,17 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         return (2 shl (height - 1)) - 1 == size
     }
 
+    /**
+     * 完全二叉树定义：所有节点靠左排列，并且叶子节点的高度差不能大于 1 ，
+     * 可以看作完美二叉树的不完全版本。
+     */
     override fun isComplete(): Boolean {
         val node = root ?: return false
         var isComplete = true
         var isLeafFound = false
         simpleLevelOrderTraversal(node) { queue ->
             val poll = queue.poll()
+            // 如果前面已经找到叶子节点，那么接下来的所有节点必须是叶子节点
             if (isLeafFound && !poll.isLeaf) {
                 isComplete = false
                 return@simpleLevelOrderTraversal true
@@ -102,6 +133,7 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
             if (poll.right != null) {
                 queue.offer(poll.right)
             } else {
+                // 一出现右子节点为空，那么接下来的所有节点都必须是叶子节点
                 isLeafFound = true
             }
             false
@@ -113,6 +145,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         preorderTraversal(root, visitor)
     }
 
+    /**
+     * 递归方式的前序遍历
+     */
     protected fun preorderRecursive(node: ITreeNode<E>?, visitor: Visitor<E>) {
         node ?: return
         if (visitor.stop) return
@@ -123,6 +158,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         preorderRecursive(node.right, visitor)
     }
 
+    /**
+     * 非递归方式的前序遍历
+     */
     protected fun preorderTraversal(node: ITreeNode<E>?, visitor: Visitor<E>) {
         node ?: return
         val stack = LinkedList<ITreeNode<E>>().also {
@@ -146,6 +184,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         inorderTraversal(root, visitor)
     }
 
+    /**
+     * 递归方式的中序遍历
+     */
     protected fun inorderRecursive(node: ITreeNode<E>?, visitor: Visitor<E>) {
         node ?: return
         if (visitor.stop) return
@@ -156,6 +197,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         inorderRecursive(node.right, visitor)
     }
 
+    /**
+     * 非递归方式的中序遍历
+     */
     protected fun inorderTraversal(node: ITreeNode<E>?, visitor: Visitor<E>) {
         var _node: ITreeNode<E>? = node ?: return
         val stack = LinkedList<ITreeNode<E>>()
@@ -177,6 +221,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         postorderTraversal(root, visitor)
     }
 
+    /**
+     * 递归方式的后序遍历
+     */
     protected fun postorderRecursive(node: ITreeNode<E>?, visitor: Visitor<E>) {
         node ?: return
         if (visitor.stop) return
@@ -187,6 +234,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         visitor.stop = visitor.visit(node.item)
     }
 
+    /**
+     * 非递归方式的后序遍历
+     */
     protected fun postorderTraversal(node: ITreeNode<E>?, visitor: Visitor<E>) {
         node ?: return
         val inStack = LinkedList<ITreeNode<E>>().also {
@@ -211,6 +261,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         }
     }
 
+    /**
+     * 层序遍历
+     */
     override fun levelOrderTraversal(visitor: Visitor<E>) {
         val node = root ?: return
         simpleLevelOrderTraversal(node) { queue ->

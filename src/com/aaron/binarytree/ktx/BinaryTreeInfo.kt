@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED")
+
 package com.aaron.binarytree.ktx
 
 import com.aaron.binarytree.printer.BinaryTreeInfo
@@ -10,6 +12,11 @@ import com.aaron.binarytree.printer.LevelOrderPrinter
  * @since 2021/12/1
  */
 
+private const val Z = 0
+
+/**
+ * 换行打印二叉树
+ */
 fun BinaryTreeInfo.println(style: BinaryTrees.PrintStyle = BinaryTrees.PrintStyle.LEVEL_ORDER) {
     when (style) {
         BinaryTrees.PrintStyle.LEVEL_ORDER -> LevelOrderPrinter(this).println()
@@ -17,6 +24,9 @@ fun BinaryTreeInfo.println(style: BinaryTrees.PrintStyle = BinaryTrees.PrintStyl
     }
 }
 
+/**
+ * 不换行打印二叉树
+ */
 fun BinaryTreeInfo.print(style: BinaryTrees.PrintStyle = BinaryTrees.PrintStyle.LEVEL_ORDER) {
     when (style) {
         BinaryTrees.PrintStyle.LEVEL_ORDER -> LevelOrderPrinter(this).print()
@@ -24,6 +34,9 @@ fun BinaryTreeInfo.print(style: BinaryTrees.PrintStyle = BinaryTrees.PrintStyle.
     }
 }
 
+/**
+ * 输出二叉树字符串
+ */
 fun BinaryTreeInfo.printString(style: BinaryTrees.PrintStyle = BinaryTrees.PrintStyle.LEVEL_ORDER): String {
     return when (style) {
         BinaryTrees.PrintStyle.LEVEL_ORDER -> LevelOrderPrinter(this).printString()

@@ -1,16 +1,17 @@
 package com.aaron.binarytree.base
 
+import com.aaron.binarytree.ktx.toListByLevelOrder
 import com.aaron.binarytree.printer.BinaryTreeInfo
 import java.util.*
 import kotlin.math.max
 
 /**
- * 二叉树实现类
+ * 二叉树基类
  *
  * @author aaronzzxup@gmail.com
  * @since 2021/12/1
  */
-open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
+abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
 
     /**
      * 根节点
@@ -25,6 +26,10 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
 
     override fun isEmpty(): Boolean {
         return size == 0
+    }
+
+    override fun contains(item: E): Boolean {
+        return toListByLevelOrder().contains(item)
     }
 
     override fun clear() {
@@ -51,16 +56,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         node ?: return 0
         var height = 0
         var levelSize = 1 // 每一层节点数量
-        simpleLevelOrderTraversal(node) { queue ->
+        simpleLevelOrderTraversal(node) { queue, poll ->
             // 每一轮遍历层节点数量都需要减一
             levelSize--
-            val poll = queue.poll()
-            if (poll.left != null) {
-                queue.offer(poll.left)
-            }
-            if (poll.right != null) {
-                queue.offer(poll.right)
-            }
             // 当层节点数量为零时代表遍历完一层，于是高度加一
             if (levelSize == 0) {
                 levelSize = queue.size
@@ -77,18 +75,11 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     override fun isFull(): Boolean {
         val node = root ?: return false
         var isFull = true
-        simpleLevelOrderTraversal(node) { queue ->
-            val poll = queue.poll()
+        simpleLevelOrderTraversal(node) { queue, poll ->
             // 非叶子节点或度不为 2 则树不为满二叉树
             if (!(poll.isLeaf || poll.hasTwoChildren)) {
                 isFull = false
                 return@simpleLevelOrderTraversal true
-            }
-            if (poll.left != null) {
-                queue.offer(poll.left)
-            }
-            if (poll.right != null) {
-                queue.offer(poll.right)
             }
             false
         }
@@ -117,22 +108,17 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
         val node = root ?: return false
         var isComplete = true
         var isLeafFound = false
-        simpleLevelOrderTraversal(node) { queue ->
-            val poll = queue.poll()
+        simpleLevelOrderTraversal(node) { queue, poll ->
             // 如果前面已经找到叶子节点，那么接下来的所有节点必须是叶子节点
             if (isLeafFound && !poll.isLeaf) {
                 isComplete = false
                 return@simpleLevelOrderTraversal true
             }
-            if (poll.left != null) {
-                queue.offer(poll.left)
-            } else if (poll.right != null) {
+            if (poll.left == null && poll.right != null) {
                 isComplete = false
                 return@simpleLevelOrderTraversal true
             }
-            if (poll.right != null) {
-                queue.offer(poll.right)
-            } else {
+            if (poll.right == null) {
                 // 一出现右子节点为空，那么接下来的所有节点都必须是叶子节点
                 isLeafFound = true
             }
@@ -266,16 +252,9 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
      */
     override fun levelOrderTraversal(visitor: Visitor<E>) {
         val node = root ?: return
-        simpleLevelOrderTraversal(node) { queue ->
-            val poll = queue.poll()
+        simpleLevelOrderTraversal(node) { queue, poll ->
             if (visitor.visit(poll.item)) {
                 return@simpleLevelOrderTraversal true
-            }
-            if (poll.left != null) {
-                queue.offer(poll.left)
-            }
-            if (poll.right != null) {
-                queue.offer(poll.right)
             }
             false
         }
@@ -283,13 +262,20 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
 
     protected inline fun simpleLevelOrderTraversal(
         node: ITreeNode<E>,
-        crossinline traversal: (Queue<ITreeNode<E>>) -> Boolean
+        crossinline traversal: (Queue<ITreeNode<E>>, ITreeNode<E>) -> Boolean
     ) {
         val queue = LinkedList<ITreeNode<E>>().also {
             it.offer(node)
         }
         while (queue.isNotEmpty()) {
-            if (traversal(queue)) break
+            val poll = queue.poll()
+            if (poll.left != null) {
+                queue.offer(poll.left)
+            }
+            if (poll.right != null) {
+                queue.offer(poll.right)
+            }
+            if (traversal(queue, poll)) break
         }
     }
 
@@ -307,18 +293,6 @@ open class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
 
     override fun string(node: Any?): Any? {
         return (node as? ITreeNode<E>)?.item
-    }
-
-    protected open fun createNode(item: E, parent: ITreeNode<E>?): ITreeNode<E> {
-        return TreeNode(item, parent)
-    }
-
-    private class TreeNode<E>(
-        override var item: E,
-        override var parent: ITreeNode<E>?
-    ) : ITreeNode<E> {
-        override var left: ITreeNode<E>? = null
-        override var right: ITreeNode<E>? = null
     }
 
     protected interface ITreeNode<E> {

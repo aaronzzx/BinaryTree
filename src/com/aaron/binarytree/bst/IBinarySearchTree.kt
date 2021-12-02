@@ -25,13 +25,6 @@ interface IBinarySearchTree<E> : IBinaryTree<E> {
     fun remove(item: E): Boolean
 
     /**
-     * 是否包含元素
-     *
-     * @return true 如果包含，false 不包含
-     */
-    fun contains(item: E): Boolean
-
-    /**
      * 根据指定元素寻找前驱
      */
     fun predecessorOf(item: E): E?

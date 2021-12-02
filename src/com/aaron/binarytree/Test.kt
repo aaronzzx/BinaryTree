@@ -11,9 +11,7 @@ fun main() {
     println("Hello BinaryTree!")
 
     val array = intArrayOf(7, 4, 2, 1, 3, 5, 9, 8, 11, 10, 12, 6)
-    val tree = BST<Int> { o1, o2 ->
-        o2 - o1
-    }
+    val tree = BST<Int>()
     array.forEach {
         tree.add(it)
     }

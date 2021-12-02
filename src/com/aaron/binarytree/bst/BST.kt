@@ -205,4 +205,16 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
         }
         return (e1 as Comparable<E>).compareTo(e2)
     }
+
+    protected open fun createNode(item: E, parent: ITreeNode<E>?): ITreeNode<E> {
+        return TreeNode(item, parent)
+    }
+
+    private class TreeNode<E>(
+        override var item: E,
+        override var parent: ITreeNode<E>?
+    ) : ITreeNode<E> {
+        override var left: ITreeNode<E>? = null
+        override var right: ITreeNode<E>? = null
+    }
 }

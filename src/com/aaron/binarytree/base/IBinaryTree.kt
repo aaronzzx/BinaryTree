@@ -19,6 +19,13 @@ interface IBinaryTree<E> : IBinaryTreeTraversal<E> {
     fun isEmpty(): Boolean
 
     /**
+     * 是否包含元素
+     *
+     * @return true 如果包含，false 不包含
+     */
+    fun contains(item: E): Boolean
+
+    /**
      * 清空整棵树
      */
     fun clear()

@@ -117,10 +117,12 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
                 // 待删除节点在父节点的右子树
                 _node.parent?.right = replacement
             }
+            afterRemove(_node)
         } else if (_node.parent == null) {
             // 来到这里其实就是这棵树只有一个节点，也就是根节点
             // 因此删除节点其实就是删除根节点
             root = null
+            afterRemove(_node)
         } else {
             // 来到这里表示待删除节点是叶子节点
             // 直接判断待删除节点是它爸爸的左子树还是右子树然后置空
@@ -129,10 +131,13 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
             } else {
                 _node.parent?.right = null
             }
+            afterRemove(_node)
         }
         size--
         return true
     }
+
+    protected open fun afterRemove(node: ITreeNode<E>) = Unit
 
     override fun contains(item: E): Boolean {
         return node(item) != null

@@ -310,5 +310,11 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
 
         val hasTwoChildren: Boolean
             get() = left != null && right != null
+
+        val isLeftChild: Boolean
+            get() = this == parent?.left
+
+        val isRightChild: Boolean
+            get() = this == parent?.right
     }
 }

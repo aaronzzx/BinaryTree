@@ -37,6 +37,7 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
             node = createNode(item, null)
             root = node
             size++
+            afterAdd(node)
             return true
         }
         var cmp = 0
@@ -64,8 +65,11 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
             parent?.right = newNode
         }
         size++
+        afterAdd(newNode)
         return true
     }
+
+    protected open fun afterAdd(node: ITreeNode<E>) = Unit
 
     override fun remove(item: E): Boolean {
         return remove(node(item))

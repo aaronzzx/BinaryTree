@@ -4,34 +4,35 @@ import kotlin.math.abs
 import kotlin.math.max
 
 /**
- * AVL树
- *
  * @author aaronzzxup@gmail.com
- * @since 2021/12/2
+ * @since 2021/12/3
  */
-class AVLTree<E> : BST<E> {
-
-    constructor() : this(null)
-
-    constructor(comparator: Comparator<E>?) : super(comparator)
+class AVLTree<E>(comparator: Comparator<E>? = null) : BST<E>(comparator) {
 
     override fun afterAdd(node: BaseNode<E>) {
-        var _node: BaseNode<E>? = node
+        checkBalanceAndFix(node, true)
+    }
+
+    override fun afterRemove(node: BaseNode<E>) {
+        checkBalanceAndFix(node, false)
+    }
+
+    private fun checkBalanceAndFix(node: BaseNode<E>, forAdd: Boolean) {
+        var _node: AVLNode<E>? = node as AVLNode<E>
         while (_node != null) {
-            val avl = castNonNull(_node)
-            if (avl.isBalanced) {
-                avl.updateHeight()
+            if (_node.isBalanced) {
+                _node.updateHeight()
             } else {
-                rebalance(avl)
-                break
+                rebalance(_node)
+                if (forAdd) break
             }
-            _node = _node.parent
+            _node = _node.parent()
         }
     }
 
     private fun rebalance(grand: AVLNode<E>) {
-        val son = grand.tallerChild()!!
-        val grandson = son.tallerChild()!!
+        val son = grand.tallerChild!!
+        val grandson = son.tallerChild!!
         if (son.isLeftChild) {
             if (grandson.isLeftChild) {
                 // LL
@@ -53,28 +54,24 @@ class AVLTree<E> : BST<E> {
         }
     }
 
-    private fun rotateLeft(node: AVLNode<E>) {
-        val child = cast(node.right)!!
-        val childLeft = cast(child.left)
-
-        node.right = childLeft
-        child.left = node
-
-        afterRotate(node, child, childLeft)
+    private fun rotateLeft(grand: AVLNode<E>) {
+        val son = grand.right()!!
+        val grandson = son.left()
+        grand.right = grandson
+        son.left = grand
+        afterRotate(grand, son, grandson)
     }
 
-    private fun rotateRight(node: AVLNode<E>) {
-        val child = cast(node.left)!!
-        val childRight = cast(child.right)
-
-        node.left = childRight
-        child.right = node
-
-        afterRotate(node, child, childRight)
+    private fun rotateRight(grand: AVLNode<E>) {
+        val son = grand.left()!!
+        val grandson = son.right()
+        grand.left = grandson
+        son.right = grand
+        afterRotate(grand, son, grandson)
     }
 
     private fun afterRotate(grand: AVLNode<E>, son: AVLNode<E>, grandson: AVLNode<E>?) {
-        son.parent = grand.parent
+        son.parent = grand.parent()
         if (grand.isLeftChild) {
             grand.parent?.left = son
         } else if (grand.isRightChild) {
@@ -90,40 +87,27 @@ class AVLTree<E> : BST<E> {
         son.updateHeight()
     }
 
-    override fun afterRemove(node: BaseNode<E>) {
-        var _node: BaseNode<E>? = node
-        while (_node != null) {
-            val avl = castNonNull(_node)
-            if (avl.isBalanced) {
-                avl.updateHeight()
-            } else {
-                rebalance(avl)
-            }
-            _node = _node.parent
-        }
-    }
-
     override fun createNode(item: E, parent: BaseNode<E>?): BaseNode<E> {
         return AVLNode(item, parent)
-    }
-
-    private fun castNonNull(node: BaseNode<E>): AVLNode<E> {
-        return cast(node)!!
-    }
-
-    private fun cast(node: BaseNode<E>?): AVLNode<E>? {
-        return node as? AVLNode<E>
     }
 
     private class AVLNode<E>(item: E, parent: BaseNode<E>?) : BaseNode<E>(item, parent) {
 
         var height = 1
+            private set
+
+        val balanceFactor: Int
+            get() = leftHeight - rightHeight
 
         val isBalanced: Boolean
             get() = abs(balanceFactor) <= 1
 
-        val balanceFactor: Int
-            get() = (cast(left)?.height ?: 0) - (cast(right)?.height ?: 0)
+        val tallerChild: AVLNode<E>?
+            get() {
+                if (leftHeight > rightHeight) return cast(left)
+                if (leftHeight < rightHeight) return cast(right)
+                return if (isLeftChild) cast(left) else cast(right)
+            }
 
         private val leftHeight: Int
             get() = cast(left)?.height ?: 0
@@ -135,10 +119,16 @@ class AVLTree<E> : BST<E> {
             height = 1 + max(leftHeight, rightHeight)
         }
 
-        fun tallerChild(): AVLNode<E>? {
-            if (leftHeight > rightHeight) return cast(left)
-            if (leftHeight < rightHeight) return cast(right)
-            return if (isLeftChild) cast(left) else cast(right)
+        fun parent(): AVLNode<E>? {
+            return cast(parent)
+        }
+
+        fun left(): AVLNode<E>? {
+            return cast(left)
+        }
+
+        fun right(): AVLNode<E>? {
+            return cast(right)
         }
 
         private fun cast(node: BaseNode<E>?): AVLNode<E>? {

@@ -15,8 +15,8 @@ class AVLTree<E> : BST<E> {
 
     constructor(comparator: Comparator<E>?) : super(comparator)
 
-    override fun afterAdd(node: ITreeNode<E>) {
-        var _node: ITreeNode<E>? = node
+    override fun afterAdd(node: BaseNode<E>) {
+        var _node: BaseNode<E>? = node
         while (_node != null) {
             val avl = castNonNull(_node)
             if (avl.isBalanced) {
@@ -29,7 +29,7 @@ class AVLTree<E> : BST<E> {
         }
     }
 
-    private fun rebalance(grand: TreeNode<E>) {
+    private fun rebalance(grand: AVLNode<E>) {
         val son = grand.tallerChild()!!
         val grandson = son.tallerChild()!!
         if (son.isLeftChild) {
@@ -53,7 +53,7 @@ class AVLTree<E> : BST<E> {
         }
     }
 
-    private fun rotateLeft(node: TreeNode<E>) {
+    private fun rotateLeft(node: AVLNode<E>) {
         val child = cast(node.right)!!
         val childLeft = cast(child.left)
 
@@ -63,7 +63,7 @@ class AVLTree<E> : BST<E> {
         afterRotate(node, child, childLeft)
     }
 
-    private fun rotateRight(node: TreeNode<E>) {
+    private fun rotateRight(node: AVLNode<E>) {
         val child = cast(node.left)!!
         val childRight = cast(child.right)
 
@@ -73,7 +73,7 @@ class AVLTree<E> : BST<E> {
         afterRotate(node, child, childRight)
     }
 
-    private fun afterRotate(grand: TreeNode<E>, son: TreeNode<E>, grandson: TreeNode<E>?) {
+    private fun afterRotate(grand: AVLNode<E>, son: AVLNode<E>, grandson: AVLNode<E>?) {
         son.parent = grand.parent
         if (grand.isLeftChild) {
             grand.parent?.left = son
@@ -90,8 +90,8 @@ class AVLTree<E> : BST<E> {
         son.updateHeight()
     }
 
-    override fun afterRemove(node: ITreeNode<E>) {
-        var _node: ITreeNode<E>? = node
+    override fun afterRemove(node: BaseNode<E>) {
+        var _node: BaseNode<E>? = node
         while (_node != null) {
             val avl = castNonNull(_node)
             if (avl.isBalanced) {
@@ -103,24 +103,19 @@ class AVLTree<E> : BST<E> {
         }
     }
 
-    override fun createNode(item: E, parent: ITreeNode<E>?): ITreeNode<E> {
-        return TreeNode(item, parent)
+    override fun createNode(item: E, parent: BaseNode<E>?): BaseNode<E> {
+        return AVLNode(item, parent)
     }
 
-    private fun castNonNull(node: ITreeNode<E>): TreeNode<E> {
+    private fun castNonNull(node: BaseNode<E>): AVLNode<E> {
         return cast(node)!!
     }
 
-    private fun cast(node: ITreeNode<E>?): TreeNode<E>? {
-        return node as? TreeNode<E>
+    private fun cast(node: BaseNode<E>?): AVLNode<E>? {
+        return node as? AVLNode<E>
     }
 
-    private class TreeNode<E>(
-        override var item: E,
-        override var parent: ITreeNode<E>?
-    ) : ITreeNode<E> {
-        override var left: ITreeNode<E>? = null
-        override var right: ITreeNode<E>? = null
+    private class AVLNode<E>(item: E, parent: BaseNode<E>?) : BaseNode<E>(item, parent) {
 
         var height = 1
 
@@ -140,14 +135,14 @@ class AVLTree<E> : BST<E> {
             height = 1 + max(leftHeight, rightHeight)
         }
 
-        fun tallerChild(): TreeNode<E>? {
+        fun tallerChild(): AVLNode<E>? {
             if (leftHeight > rightHeight) return cast(left)
             if (leftHeight < rightHeight) return cast(right)
             return if (isLeftChild) cast(left) else cast(right)
         }
 
-        private fun cast(node: ITreeNode<E>?): TreeNode<E>? {
-            return node as? TreeNode<E>
+        private fun cast(node: BaseNode<E>?): AVLNode<E>? {
+            return node as? AVLNode<E>
         }
     }
 }

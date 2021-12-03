@@ -16,7 +16,7 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 根节点
      */
-    protected open var root: ITreeNode<E>? = null
+    protected open var root: BaseNode<E>? = null
 
     /**
      * 总节点数量，仅内部可修改
@@ -44,7 +44,7 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 递归方式获取节点高度
      */
-    protected fun getHeightByRecursive(node: ITreeNode<E>?): Int {
+    protected fun getHeightByRecursive(node: BaseNode<E>?): Int {
         node ?: return 0
         return 1 + max(getHeightByRecursive(node.left), getHeightByRecursive(node.right))
     }
@@ -52,7 +52,7 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 遍历方式获取节点高度
      */
-    protected fun getHeightByTraversal(node: ITreeNode<E>?): Int {
+    protected fun getHeightByTraversal(node: BaseNode<E>?): Int {
         node ?: return 0
         var height = 0
         var levelSize = 1 // 每一层节点数量
@@ -134,7 +134,7 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 递归方式的前序遍历
      */
-    protected fun preorderRecursive(node: ITreeNode<E>?, visitor: Visitor<E>) {
+    protected fun preorderRecursive(node: BaseNode<E>?, visitor: Visitor<E>) {
         node ?: return
         if (visitor.stop) return
         visitor.stop = visitor.visit(node.item)
@@ -147,9 +147,9 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 非递归方式的前序遍历
      */
-    protected fun preorderTraversal(node: ITreeNode<E>?, visitor: Visitor<E>) {
+    protected fun preorderTraversal(node: BaseNode<E>?, visitor: Visitor<E>) {
         node ?: return
-        val stack = LinkedList<ITreeNode<E>>().also {
+        val stack = LinkedList<BaseNode<E>>().also {
             it.push(node)
         }
         while (stack.isNotEmpty()) {
@@ -173,7 +173,7 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 递归方式的中序遍历
      */
-    protected fun inorderRecursive(node: ITreeNode<E>?, visitor: Visitor<E>) {
+    protected fun inorderRecursive(node: BaseNode<E>?, visitor: Visitor<E>) {
         node ?: return
         if (visitor.stop) return
         inorderRecursive(node.left, visitor)
@@ -186,9 +186,9 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 非递归方式的中序遍历
      */
-    protected fun inorderTraversal(node: ITreeNode<E>?, visitor: Visitor<E>) {
-        var _node: ITreeNode<E>? = node ?: return
-        val stack = LinkedList<ITreeNode<E>>()
+    protected fun inorderTraversal(node: BaseNode<E>?, visitor: Visitor<E>) {
+        var _node: BaseNode<E>? = node ?: return
+        val stack = LinkedList<BaseNode<E>>()
         while (_node != null || stack.isNotEmpty()) {
             if (_node != null) {
                 stack.push(_node)
@@ -210,7 +210,7 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 递归方式的后序遍历
      */
-    protected fun postorderRecursive(node: ITreeNode<E>?, visitor: Visitor<E>) {
+    protected fun postorderRecursive(node: BaseNode<E>?, visitor: Visitor<E>) {
         node ?: return
         if (visitor.stop) return
         postorderRecursive(node.left, visitor)
@@ -223,12 +223,12 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     /**
      * 非递归方式的后序遍历
      */
-    protected fun postorderTraversal(node: ITreeNode<E>?, visitor: Visitor<E>) {
+    protected fun postorderTraversal(node: BaseNode<E>?, visitor: Visitor<E>) {
         node ?: return
-        val inStack = LinkedList<ITreeNode<E>>().also {
+        val inStack = LinkedList<BaseNode<E>>().also {
             it.push(node)
         }
-        val outStack = LinkedList<ITreeNode<E>>()
+        val outStack = LinkedList<BaseNode<E>>()
         while (inStack.isNotEmpty()) {
             val pop = inStack.pop()
             outStack.push(pop)
@@ -261,10 +261,10 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     }
 
     protected inline fun simpleLevelOrderTraversal(
-        node: ITreeNode<E>,
-        crossinline traversal: (Queue<ITreeNode<E>>, ITreeNode<E>) -> Boolean
+        node: BaseNode<E>,
+        crossinline traversal: (Queue<BaseNode<E>>, BaseNode<E>) -> Boolean
     ) {
-        val queue = LinkedList<ITreeNode<E>>().also {
+        val queue = LinkedList<BaseNode<E>>().also {
             it.offer(node)
         }
         while (queue.isNotEmpty()) {
@@ -284,26 +284,25 @@ abstract class BinaryTree<E> : IBinaryTree<E>, BinaryTreeInfo {
     }
 
     override fun left(node: Any?): Any? {
-        return (node as? ITreeNode<E>)?.left
+        return (node as? BaseNode<E>)?.left
     }
 
     override fun right(node: Any?): Any? {
-        return (node as? ITreeNode<E>)?.right
+        return (node as? BaseNode<E>)?.right
     }
 
     override fun string(node: Any?): Any? {
-        return (node as? ITreeNode<E>)?.item
+        return (node as? BaseNode<E>)?.item
     }
 
-    protected interface ITreeNode<E> {
+    protected abstract class BaseNode<E>(
+        var item: E,
+        var parent: BaseNode<E>?
+    ) {
 
-        var item: E
+        var left: BaseNode<E>? = null
 
-        var parent: ITreeNode<E>?
-
-        var left: ITreeNode<E>?
-
-        var right: ITreeNode<E>?
+        var right: BaseNode<E>? = null
 
         val isLeaf: Boolean
             get() = left == null && right == null

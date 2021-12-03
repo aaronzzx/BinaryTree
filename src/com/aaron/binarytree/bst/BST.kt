@@ -12,8 +12,6 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
 
     private var comparator: Comparator<E>? = null
 
-    override var root: ITreeNode<E>? = null
-
     constructor() : this(null)
 
     constructor(comparator: Comparator<E>?) {
@@ -31,7 +29,7 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
         require(item != null) {
             "The item must not be null."
         }
-        var node: ITreeNode<E>? = root
+        var node: BaseNode<E>? = root
         if (node == null) {
             // 根节点为空需要先创建根节点
             node = createNode(item, null)
@@ -69,7 +67,7 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
         return true
     }
 
-    protected open fun afterAdd(node: ITreeNode<E>) = Unit
+    protected open fun afterAdd(node: BaseNode<E>) = Unit
 
     override fun remove(item: E): Boolean {
         return remove(node(item))
@@ -82,7 +80,7 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
      * 3. 节点是根节点
      * 4. 节点是叶子节点
      */
-    private fun remove(node: ITreeNode<E>?): Boolean {
+    private fun remove(node: BaseNode<E>?): Boolean {
         var _node = node ?: return false
         // 处理度为 2 的情况
         if (_node.hasTwoChildren) {
@@ -137,7 +135,7 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
         return true
     }
 
-    protected open fun afterRemove(node: ITreeNode<E>) = Unit
+    protected open fun afterRemove(node: BaseNode<E>) = Unit
 
     override fun contains(item: E): Boolean {
         return node(item) != null
@@ -152,8 +150,8 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
      * 的 right 往下找，最 right 的那个就是前驱，如果 left 没有子节点
      * 那么 left 就是前驱。
      */
-    private fun predecessor(node: ITreeNode<E>?): ITreeNode<E>? {
-        var _node: ITreeNode<E>? = node ?: return null
+    private fun predecessor(node: BaseNode<E>?): BaseNode<E>? {
+        var _node: BaseNode<E>? = node ?: return null
         if (_node?.left != null) {
             _node = _node.left
             while (_node?.right != null) {
@@ -174,8 +172,8 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
     /**
      * 寻找后继，逻辑和寻找前驱相反。
      */
-    private fun successor(node: ITreeNode<E>?): ITreeNode<E>? {
-        var _node: ITreeNode<E>? = node ?: return null
+    private fun successor(node: BaseNode<E>?): BaseNode<E>? {
+        var _node: BaseNode<E>? = node ?: return null
         if (_node?.right != null) {
             _node = _node.right
             while (_node?.left != null) {
@@ -192,7 +190,7 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
     /**
      * 根据元素寻找节点
      */
-    private fun node(item: E): ITreeNode<E>? {
+    private fun node(item: E): BaseNode<E>? {
         var node = root
         while (node != null) {
             val cmp = compare(item, node.item)
@@ -215,15 +213,9 @@ open class BST<E> : BinaryTree<E>, IBinarySearchTree<E> {
         return (e1 as Comparable<E>).compareTo(e2)
     }
 
-    protected open fun createNode(item: E, parent: ITreeNode<E>?): ITreeNode<E> {
+    protected open fun createNode(item: E, parent: BaseNode<E>?): BaseNode<E> {
         return TreeNode(item, parent)
     }
 
-    private class TreeNode<E>(
-        override var item: E,
-        override var parent: ITreeNode<E>?
-    ) : ITreeNode<E> {
-        override var left: ITreeNode<E>? = null
-        override var right: ITreeNode<E>? = null
-    }
+    private class TreeNode<E>(item: E, parent: BaseNode<E>?) : BaseNode<E>(item, parent)
 }

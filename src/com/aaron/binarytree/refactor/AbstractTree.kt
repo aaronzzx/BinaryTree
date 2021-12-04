@@ -17,4 +17,8 @@ abstract class AbstractTree<E> : Tree<E> {
     override fun isEmpty(): Boolean {
         return size == 0
     }
+
+    override fun toString(): String {
+        return toList().toString()
+    }
 }

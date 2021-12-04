@@ -16,14 +16,14 @@ fun main() {
         isPerfect: ${tree.isPerfect()}
         isComplete: ${tree.isComplete()}
         toList: ${tree.toList()}
-    """.trimIndent()
-    )
+    """.trimIndent())
     PrintTree(tree as BinaryTree<*>).println()
+    println("$tree")
 }
 
 private fun getTree(): Tree<Int> {
     val tree = AVLTree<Int>()
-    val array = (1..63).toList()
+    val array = (1..31).toList()
     tree.addAll(array)
     return tree
 }

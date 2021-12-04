@@ -145,15 +145,13 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
     override fun retainAll(elements: Collection<E>): Boolean {
         var modified = false
         val itr = iterator()
-        val needRemoved = arrayListOf<E>()
         while (itr.hasNext()) {
-            val next = itr.next()
-            if (!elements.contains(next)) {
-                needRemoved.add(next)
+            val e = itr.next()
+            if (!elements.contains(e)) {
+                itr.remove()
                 modified = true
             }
         }
-        removeAll(needRemoved)
         return modified
     }
 
@@ -216,7 +214,7 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
 
         private var lastIndex = -1
 
-        private val expectedModCount = modCount
+        private var expectedModCount = modCount
 
         private val list by lazy {
             val temp = arrayListOf<E>()
@@ -241,6 +239,7 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
             val e = list.removeAt(lastIndex)
             remove(e)
             lastIndex--
+            expectedModCount = modCount
         }
 
         private fun checkForComodification() {

@@ -9,10 +9,9 @@ import com.aaron.binarytree.ktx.println
 fun main() {
     val tree = AVLTree<Int>()
     val wrapper = PrintTree(tree)
-    val array = (1..15).toList()
+    val array = (1..63).toList()
     tree.addAll(array)
     wrapper.println()
-    for (e in tree) {
-        println("e: $e")
-    }
+    tree.retainAll((1..32).toSet())
+    wrapper.println()
 }

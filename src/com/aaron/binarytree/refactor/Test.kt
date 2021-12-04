@@ -7,9 +7,9 @@ import com.aaron.binarytree.ktx.println
  * @since 2021/12/3
  */
 fun main() {
-    val tree = BST<Int>()
+    val tree = AVLTree<Int>()
     val wrapper = PrintTree(tree)
-    val array = listOf(7, 4, 2, 1, 3, 5, 9, 8, 11, 10, 12, 6)
+    val array = (1..15).toList()
     tree.addAll(array)
     wrapper.println()
 }

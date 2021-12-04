@@ -9,6 +9,8 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
     override var size: Int = 0
         protected set
 
+    private var modCount = 0
+
     override fun add(element: E): Boolean {
         require(element != null) {
             "The element must not be null."
@@ -18,6 +20,7 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
             node = createNode(element, null)
             root = node
             size++
+            modCount++
             afterAdd(node)
             return true
         }
@@ -42,6 +45,7 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
             parent!!.right = newNode
         }
         size++
+        modCount++
         afterAdd(newNode)
         return true
     }
@@ -94,6 +98,7 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
             afterRemove(_node)
         }
         size--
+        modCount++
         return true
     }
 
@@ -207,20 +212,41 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
         return TreeNode(item, parent)
     }
 
-    private inner class ItrProxy(
-        private val target: BaseIterator
-    ) : MutableIterator<E> {
+    private inner class ItrProxy(target: BaseIterator) : MutableIterator<E> {
+
+        private var lastIndex = -1
+
+        private val expectedModCount = modCount
+
+        private val list by lazy {
+            val temp = arrayListOf<E>()
+            for (e in target) {
+                temp.add(e)
+            }
+            temp
+        }
 
         override fun hasNext(): Boolean {
-            return target.hasNext()
+            checkForComodification()
+            return lastIndex < size - 1
         }
 
         override fun next(): E {
-            return target.next()
+            checkForComodification()
+            return list[++lastIndex]
         }
 
         override fun remove() {
-            throw UnsupportedOperationException()
+            checkForComodification()
+            val e = list.removeAt(lastIndex)
+            remove(e)
+            lastIndex--
+        }
+
+        private fun checkForComodification() {
+            if (modCount != expectedModCount) {
+                throw ConcurrentModificationException()
+            }
         }
     }
 }

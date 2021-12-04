@@ -148,21 +148,13 @@ abstract class BinaryTree<E> : AbstractTree<E>() {
 
     protected abstract inner class BaseIterator(protected var node: TreeNode<E>?) : Iterator<E> {
 
-        private val initialSize = size
-
         private var index = 0
 
         override fun hasNext(): Boolean {
-            if (initialSize != size) {
-                throw ConcurrentModificationException()
-            }
             return index < size
         }
 
         override fun next(): E {
-            if (initialSize != size) {
-                throw ConcurrentModificationException()
-            }
             if (!hasNext()) {
                 throw NoSuchElementException()
             }

@@ -12,4 +12,7 @@ fun main() {
     val array = (1..15).toList()
     tree.addAll(array)
     wrapper.println()
+    for (e in tree) {
+        println("e: $e")
+    }
 }

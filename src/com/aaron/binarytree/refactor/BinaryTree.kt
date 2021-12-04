@@ -82,7 +82,7 @@ abstract class BinaryTree<E> : AbstractTree<E>() {
                 isComplete = false
                 return@levelOrderTraversal true
             }
-            if (it.left == null) {
+            if (it.left == null && it.right != null) {
                 isComplete = false
                 return@levelOrderTraversal true
             }

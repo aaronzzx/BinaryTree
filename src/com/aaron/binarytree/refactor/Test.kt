@@ -12,8 +12,4 @@ fun main() {
     val array = listOf(7, 4, 2, 1, 3, 5, 9, 8, 11, 10, 12, 6)
     tree.addAll(array)
     wrapper.println()
-    val list = listOf(1, 2, 3, 4, 5, 6)
-    // retainAll 有问题
-    tree.retainAll(list)
-    wrapper.println()
 }

@@ -140,12 +140,15 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
     override fun retainAll(elements: Collection<E>): Boolean {
         var modified = false
         val itr = iterator()
+        val needRemoved = arrayListOf<E>()
         while (itr.hasNext()) {
-            if (!elements.contains(itr.next())) {
-                itr.remove()
+            val next = itr.next()
+            if (!elements.contains(next)) {
+                needRemoved.add(next)
                 modified = true
             }
         }
+        removeAll(needRemoved)
         return modified
     }
 
@@ -217,7 +220,7 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
         }
 
         override fun remove() {
-            remove(target.currentNode)
+            throw UnsupportedOperationException()
         }
     }
 }

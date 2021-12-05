@@ -62,6 +62,7 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
     override fun clear() {
         root = null
         size = 0
+        modCount++
     }
 
     override fun remove(element: E): Boolean {

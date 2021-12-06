@@ -17,7 +17,7 @@ fun main() {
         isComplete: ${tree.isComplete()}
         toList: ${tree.toList()}
     """.trimIndent())
-    PrintTree(tree as BinaryTree<*>).println()
+    BinaryPrintTree(tree as BinaryTree<*>).println()
     println("$tree")
 }
 

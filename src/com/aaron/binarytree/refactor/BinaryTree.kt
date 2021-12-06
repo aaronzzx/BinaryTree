@@ -111,22 +111,6 @@ abstract class BinaryTree<E> : AbstractTree<E>() {
         }
     }
 
-    internal open fun rootNode(): Any? {
-        return root
-    }
-
-    internal open fun leftNode(node: Any?): Any? {
-        return (node as? TreeNode<*>)?.left
-    }
-
-    internal open fun rightNode(node: Any?): Any? {
-        return (node as? TreeNode<*>)?.right
-    }
-
-    internal open fun nodeElement(node: Any?): Any? {
-        return (node as? TreeNode<*>)?.item
-    }
-
     protected open class TreeNode<E>(var item: E, var parent: TreeNode<E>?) {
 
         var left: TreeNode<E>? = null

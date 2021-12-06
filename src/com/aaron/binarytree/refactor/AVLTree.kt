@@ -23,11 +23,63 @@ class AVLTree<E>(comparator: Comparator<E>? = null) : BST<E>(comparator) {
             if (avlNode.isBalanced) {
                 avlNode.updateHeight()
             } else {
-                rebalance(avlNode)
+                rebalance2(avlNode)
                 if (forAdd) break
             }
             avlNode = avlNode.parent()
         }
+    }
+
+    private fun rebalance2(grand: AVLNode<E>) {
+        val papa = grand.tallerChild!!
+        val son = papa.tallerChild!!
+        if (papa.isLeftChild) {
+            if (son.isLeftChild) {
+                rotate(grand, son.left(), son, son.right(), papa, papa.right(), grand, grand.right())
+            } else {
+                rotate(grand, papa.left(), papa, son.left(), son, son.right(), grand, grand.right())
+            }
+        } else {
+            if (son.isLeftChild) {
+                rotate(grand, grand.left(), grand, son.left(), son, son.right(), papa, papa.right())
+            } else {
+                rotate(grand, grand.left(), grand, papa.left(), papa, son.left(), son, son.right())
+            }
+        }
+    }
+
+    private fun rotate(
+        root: AVLNode<E>,
+        a: AVLNode<E>?, b: AVLNode<E>, c: AVLNode<E>?,
+        d: AVLNode<E>,
+        e: AVLNode<E>?, f: AVLNode<E>, g: AVLNode<E>?
+    ) {
+        d.parent = root.parent
+        if (root.isLeftChild) {
+            root.parent?.left = d
+        } else if (root.isRightChild) {
+            root.parent?.right = d
+        } else {
+            this.root = d
+        }
+
+        a?.parent = b
+        c?.parent = b
+        b.left = a
+        b.right = c
+        b.updateHeight()
+
+        e?.parent = f
+        g?.parent = f
+        f.left = e
+        f.right = g
+        f.updateHeight()
+
+        b.parent = d
+        f.parent = d
+        d.left = b
+        d.right = f
+        d.updateHeight()
     }
 
     private fun rebalance(grand: AVLNode<E>) {

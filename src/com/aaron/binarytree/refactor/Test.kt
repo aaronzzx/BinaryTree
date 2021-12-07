@@ -12,9 +12,6 @@ fun main() {
         """
         size: ${tree.size}
         height: ${tree.height()}
-        isFull: ${tree.isFull()}
-        isPerfect: ${tree.isPerfect()}
-        isComplete: ${tree.isComplete()}
         toList: ${tree.toList()}
     """.trimIndent())
     BinaryPrintTree(tree as BinaryTree<*>).println()

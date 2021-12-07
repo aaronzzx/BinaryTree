@@ -54,7 +54,7 @@ abstract class BinaryTree<E> : AbstractTree<E>() {
         return height
     }
 
-    override fun isFull(): Boolean {
+    fun isFull(): Boolean {
         var isFull = true
         levelOrderTraversal {
             if (!(it.isLeaf || it.hasTwoChildren)) {
@@ -66,7 +66,7 @@ abstract class BinaryTree<E> : AbstractTree<E>() {
         return isFull
     }
 
-    override fun isPerfect(): Boolean {
+    fun isPerfect(): Boolean {
         val height = height()
         if (height == 0) {
             return false
@@ -74,7 +74,7 @@ abstract class BinaryTree<E> : AbstractTree<E>() {
         return (2 shl (height - 1)) - 1 == size
     }
 
-    override fun isComplete(): Boolean {
+    fun isComplete(): Boolean {
         var isComplete = true
         var isLeafFound = false
         levelOrderTraversal {

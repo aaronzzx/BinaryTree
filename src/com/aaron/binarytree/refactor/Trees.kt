@@ -41,21 +41,6 @@ interface Tree<E> : Collection<E> {
      * 获取树的高度
      */
     fun height(): Int
-
-    /**
-     * 是否满叉树
-     */
-    fun isFull(): Boolean
-
-    /**
-     * 是否完美叉树
-     */
-    fun isPerfect(): Boolean
-
-    /**
-     * 是否完全叉树
-     */
-    fun isComplete(): Boolean
 }
 
 interface MutableTree<E> : Tree<E>, MutableCollection<E> {

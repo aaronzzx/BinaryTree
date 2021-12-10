@@ -128,6 +128,19 @@ abstract class BinaryTree<E> : AbstractTree<E>() {
 
         val isRightChild: Boolean
             get() = this == parent?.right
+
+        val sibling: TreeNode<E>?
+            get() = if (isLeftChild) parent?.right else parent?.left
+
+        val uncle: TreeNode<E>?
+            get() = parent?.sibling
+
+        val grandparent: TreeNode<E>?
+            get() = parent?.parent
+
+        override fun toString(): String {
+            return item.toString()
+        }
     }
 
     protected abstract inner class BaseIterator(protected var node: TreeNode<E>?) : Iterator<E> {

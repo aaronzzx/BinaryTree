@@ -7,7 +7,7 @@ import kotlin.math.max
  * @author aaronzzxup@gmail.com
  * @since 2021/12/4
  */
-class AVLTree<E>(comparator: Comparator<E>? = null) : BST<E>(comparator) {
+class AVLTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
 
     override fun afterAdd(node: TreeNode<E>) {
         checkBalanceAndFix(node, true)
@@ -23,27 +23,27 @@ class AVLTree<E>(comparator: Comparator<E>? = null) : BST<E>(comparator) {
             if (avlNode.isBalanced) {
                 avlNode.updateHeight()
             } else {
-                rebalance2(avlNode)
+                rebalance(avlNode)
                 if (forAdd) break
             }
             avlNode = avlNode.parent()
         }
     }
 
-    private fun rebalance2(grand: AVLNode<E>) {
-        val papa = grand.tallerChild!!
-        val son = papa.tallerChild!!
-        if (papa.isLeftChild) {
-            if (son.isLeftChild) {
-                rotate(grand, son.left(), son, son.right(), papa, papa.right(), grand, grand.right())
+    private fun rebalance2(grandparent: AVLNode<E>) {
+        val parent = grandparent.tallerChild!!
+        val child = parent.tallerChild!!
+        if (parent.isLeftChild) {
+            if (child.isLeftChild) {
+                rotate(grandparent, child.left(), child, child.right(), parent, parent.right(), grandparent, grandparent.right())
             } else {
-                rotate(grand, papa.left(), papa, son.left(), son, son.right(), grand, grand.right())
+                rotate(grandparent, parent.left(), parent, child.left(), child, child.right(), grandparent, grandparent.right())
             }
         } else {
-            if (son.isLeftChild) {
-                rotate(grand, grand.left(), grand, son.left(), son, son.right(), papa, papa.right())
+            if (child.isLeftChild) {
+                rotate(grandparent, grandparent.left(), grandparent, child.left(), child, child.right(), parent, parent.right())
             } else {
-                rotate(grand, grand.left(), grand, papa.left(), papa, son.left(), son, son.right())
+                rotate(grandparent, grandparent.left(), grandparent, parent.left(), parent, child.left(), child, child.right())
             }
         }
     }
@@ -82,57 +82,30 @@ class AVLTree<E>(comparator: Comparator<E>? = null) : BST<E>(comparator) {
         d.updateHeight()
     }
 
-    private fun rebalance(grand: AVLNode<E>) {
-        val papa = grand.tallerChild!!
-        val son = papa.tallerChild!!
-        if (papa.isLeftChild) {
-            if (son.isLeftChild) {
-                rotateRight(grand)
+    private fun rebalance(grandparent: AVLNode<E>) {
+        val parent = grandparent.tallerChild!!
+        val child = parent.tallerChild!!
+        if (parent.isLeftChild) {
+            if (child.isLeftChild) {
+                rotateRight(grandparent)
             } else {
-                rotateLeft(papa)
-                rotateRight(grand)
+                rotateLeft(parent)
+                rotateRight(grandparent)
             }
         } else {
-            if (son.isLeftChild) {
-                rotateRight(papa)
-                rotateLeft(grand)
+            if (child.isLeftChild) {
+                rotateRight(parent)
+                rotateLeft(grandparent)
             } else {
-                rotateLeft(grand)
+                rotateLeft(grandparent)
             }
         }
     }
 
-    private fun rotateLeft(grand: AVLNode<E>) {
-        val papa = grand.right()!!
-        val son = papa.left()
-        grand.right = son
-        papa.left = grand
-        afterRotate(grand, papa, son)
-    }
-
-    private fun rotateRight(grand: AVLNode<E>) {
-        val papa = grand.left()!!
-        val son = papa.right()
-        grand.left = son
-        papa.right = grand
-        afterRotate(grand, papa, son)
-    }
-
-    private fun afterRotate(grand: AVLNode<E>, papa: AVLNode<E>, son: AVLNode<E>?) {
-        papa.parent = grand.parent
-        if (grand.isLeftChild) {
-            grand.parent?.left = papa
-        } else if (grand.isRightChild) {
-            grand.parent?.right = papa
-        } else {
-            root = papa
-        }
-
-        son?.parent = grand
-        grand.parent = papa
-
-        grand.updateHeight()
-        papa.updateHeight()
+    override fun afterRotate(grandparent: TreeNode<E>?, parent: TreeNode<E>?, child: TreeNode<E>?) {
+        super.afterRotate(grandparent, parent, child)
+        (grandparent as AVLNode<E>).updateHeight()
+        (parent as AVLNode<E>).updateHeight()
     }
 
     override fun createNode(item: E, parent: TreeNode<E>?): TreeNode<E> {

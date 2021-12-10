@@ -21,7 +21,7 @@ class BinaryPrintTree<E>(private val tree: BinaryTree<E>) : Tree<E> by tree, Bin
     }
 
     override fun string(node: Any?): Any? {
-        return getString(node)
+        return node
     }
 
     private fun getRoot(obj: Any?): Any? {
@@ -49,22 +49,6 @@ class BinaryPrintTree<E>(private val tree: BinaryTree<E>) : Tree<E> by tree, Bin
                 it.isAccessible = true
             }
             child.get(obj)
-        } catch (ignored: Exception) {
-            null
-        }
-    }
-
-    private fun getString(obj: Any?): Any? {
-        return try {
-            val bt = BinaryTree::class.java
-            val subClasses = bt.declaredClasses
-            val clazz = subClasses.find {
-                it.name == "${bt.name}\$TreeNode"
-            } ?: return null
-            val field = clazz.getDeclaredField("item").also {
-                it.isAccessible = true
-            }
-            field.get(obj)
         } catch (ignored: Exception) {
             null
         }

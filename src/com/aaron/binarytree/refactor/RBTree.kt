@@ -20,12 +20,14 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
             return node.color == BLACK
         }
 
-        private fun <E> TreeNode<E>?.red() {
+        private fun <E> TreeNode<E>?.red(): TreeNode<E>? {
             toRBNode()?.color = RED
+            return this
         }
 
-        private fun <E> TreeNode<E>?.black() {
+        private fun <E> TreeNode<E>?.black(): TreeNode<E>? {
             toRBNode()?.color = BLACK
+            return this
         }
 
         private fun <E> TreeNode<E>?.toRBNode(): RBNode<E>? {
@@ -45,28 +47,32 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
 
         val grandparent = node.grandparent
         val uncle = node.uncle
-        if (uncle.isBlack()) {
-            if (parent.isLeftChild) {
-                grandparent.red()
-                if (node.isLeftChild) {
-                    parent.black()
-                } else {
-                    node.black()
-                    rotateLeft(parent)
-                }
-                rotateRight(grandparent)
-            } else {
-                grandparent.red()
-                if (node.isLeftChild) {
-                    node.black()
-                    rotateRight(parent)
-                } else {
-                    parent.black()
-                }
-                rotateLeft(grandparent)
-            }
-        } else {
 
+        if (uncle.isRed()) {
+            parent.black()
+            uncle.black()
+            afterAdd(grandparent.red()!!)
+            return
+        }
+
+        if (parent.isLeftChild) {
+            grandparent.red()
+            if (node.isLeftChild) {
+                parent.black()
+            } else {
+                node.black()
+                rotateLeft(parent)
+            }
+            rotateRight(grandparent)
+        } else {
+            grandparent.red()
+            if (node.isLeftChild) {
+                node.black()
+                rotateRight(parent)
+            } else {
+                parent.black()
+            }
+            rotateLeft(grandparent)
         }
     }
 

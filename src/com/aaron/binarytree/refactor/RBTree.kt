@@ -45,18 +45,17 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
 
         if (parent.isBlack()) return
 
-        val grandparent = node.grandparent
+        val grandparent = node.grandparent.red()
         val uncle = node.uncle
 
         if (uncle.isRed()) {
             parent.black()
             uncle.black()
-            afterAdd(grandparent.red()!!)
+            afterAdd(grandparent!!)
             return
         }
 
         if (parent.isLeftChild) {
-            grandparent.red()
             if (node.isLeftChild) {
                 parent.black()
             } else {
@@ -65,7 +64,6 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
             }
             rotateRight(grandparent)
         } else {
-            grandparent.red()
             if (node.isLeftChild) {
                 node.black()
                 rotateRight(parent)

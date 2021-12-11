@@ -8,10 +8,10 @@ import kotlin.random.Random
  * @since 2021/12/3
  */
 fun main() {
-    val list = 1..31
-    val avlTree = AVLTree<Int>().also { it.addAll(list) }
+    val list = 11 downTo 1
+//    val avlTree = AVLTree<Int>().also { it.addAll(list) }
     val rbTree = RBTree<Int>().also { it.addAll(list) }
-    BinaryPrintTree(avlTree as BinaryTree<*>).println()
+//    BinaryPrintTree(avlTree as BinaryTree<*>).println()
     BinaryPrintTree(rbTree as BinaryTree<*>).println()
 }
 

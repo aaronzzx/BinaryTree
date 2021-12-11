@@ -38,6 +38,11 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
     }
 
     override fun afterAdd(node: TreeNode<E>) {
+        _2_3_tree(node)
+//        _2_3_4_tree(node)
+    }
+
+    private fun _2_3_4_tree(node: TreeNode<E>) {
         node.red()
         var _node = node
         while (_node != root && _node.parent.isRed()) {
@@ -51,17 +56,46 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
                         _node = _node.parent!!
                         rotateLeft(_node)
                     }
-                    _node.grandparent.red()
                     _node.parent.black()
-                    rotateRight(_node.grandparent)
+                    rotateRight(_node.grandparent.red())
                 } else {
                     if (_node.isLeftChild) {
                         _node = _node.parent!!
                         rotateRight(_node)
                     }
-                    _node.grandparent.red()
                     _node.parent.black()
-                    rotateLeft(_node.grandparent)
+                    rotateLeft(_node.grandparent.red())
+                }
+            }
+        }
+        root.black()
+    }
+
+    private fun _2_3_tree(node: TreeNode<E>) {
+        node.red()
+        var _node = node
+        while (_node != root && _node.isRed() && (_node.parent.isRed() || _node.isLeftChild)) {
+            if (_node.parent.isRed()) {
+                // 双红
+                if (_node.isLeftChild) {
+                    // RL
+                    _node = _node.parent!!
+                    rotateRight(_node)
+                }
+                // RR
+                _node.black()
+                rotateLeft(_node.grandparent.black())
+                _node = _node.parent!!
+            } else {
+                if (_node.sibling.isRed()) {
+                    // 两个红节点发生上溢
+                    _node.black()
+                    _node.sibling.black()
+                    _node = _node.parent.red()!!
+                } else if (_node.isLeftChild) {
+                    // 红节点是左子节点
+                    _node.black()
+                    rotateRight(_node.parent.red()!!)
                 }
             }
         }

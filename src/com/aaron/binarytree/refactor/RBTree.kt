@@ -11,23 +11,25 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
         private const val RED = true
 
         private fun <E> TreeNode<E>?.isRed(): Boolean {
-            val node = toRBNode() ?: return false
-            return node.color == RED
+            if (toRBNode() == null) {
+                return false
+            }
+            return toRBNode()!!.color == RED
         }
 
         private fun <E> TreeNode<E>?.isBlack(): Boolean {
-            val node = toRBNode() ?: return true
-            return node.color == BLACK
+            if (toRBNode() == null) {
+                return true
+            }
+            return toRBNode()!!.color == BLACK
         }
 
         private fun <E> TreeNode<E>?.red(): TreeNode<E>? {
-            toRBNode()?.color = RED
-            return this
+            return toRBNode()?.also { it.color = RED }
         }
 
         private fun <E> TreeNode<E>?.black(): TreeNode<E>? {
-            toRBNode()?.color = BLACK
-            return this
+            return toRBNode()?.also { it.color = BLACK }
         }
 
         private fun <E> TreeNode<E>?.toRBNode(): RBNode<E>? {
@@ -36,49 +38,43 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
     }
 
     override fun afterAdd(node: TreeNode<E>) {
-        val parent = node.parent
-
-        if (parent == null) {
-            node.black()
-            return
-        }
-
-        if (parent.isBlack()) return
-
-        val grandparent = node.grandparent.red()
-        val uncle = node.uncle
-
-        if (uncle.isRed()) {
-            parent.black()
-            uncle.black()
-            afterAdd(grandparent!!)
-            return
-        }
-
-        if (parent.isLeftChild) {
-            if (node.isLeftChild) {
-                parent.black()
+        node.red()
+        var _node = node
+        while (_node != root && _node.parent.isRed()) {
+            if (_node.uncle.isRed()) {
+                _node.parent.black()
+                _node.uncle.black()
+                _node = _node.grandparent.red() ?: break
             } else {
-                node.black()
-                rotateLeft(parent)
+                if (_node.parent!!.isLeftChild) {
+                    if (_node.isRightChild) {
+                        _node = _node.parent!!
+                        rotateLeft(_node)
+                    }
+                    _node.grandparent.red()
+                    _node.parent.black()
+                    rotateRight(_node.grandparent)
+                } else {
+                    if (_node.isLeftChild) {
+                        _node = _node.parent!!
+                        rotateRight(_node)
+                    }
+                    _node.grandparent.red()
+                    _node.parent.black()
+                    rotateLeft(_node.grandparent)
+                }
             }
-            rotateRight(grandparent)
-        } else {
-            if (node.isLeftChild) {
-                node.black()
-                rotateRight(parent)
-            } else {
-                parent.black()
-            }
-            rotateLeft(grandparent)
         }
+        root.black()
     }
 
     override fun createNode(item: E, parent: TreeNode<E>?): TreeNode<E> {
         return RBNode(item, parent)
     }
 
-    private class RBNode<E>(item: E, parent: TreeNode<E>?, var color: Boolean = RED) : TreeNode<E>(item, parent) {
+    private class RBNode<E>(item: E, parent: TreeNode<E>?) : TreeNode<E>(item, parent) {
+
+        var color: Boolean = RED
 
         override fun toString(): String {
             if (isRed()) {

@@ -13,8 +13,6 @@ fun main() {
     val rbTree = RBTree<Int>().also { it.addAll(list) }
     BinaryPrintTree(avlTree as BinaryTree<*>).println()
     BinaryPrintTree(rbTree as BinaryTree<*>).println()
-    println("AVLTree: $avlTree")
-    println("RBTree: $rbTree")
 }
 
 private fun getTree(tree: BST<Int>): Tree<Int> {

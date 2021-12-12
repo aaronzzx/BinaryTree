@@ -46,11 +46,6 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
     }
 
     override fun afterAdd(node: TreeNode<E>) {
-//        _2_3_tree_add(node)
-        _2_3_4_tree_add(node)
-    }
-
-    private fun _2_3_4_tree_add(node: TreeNode<E>) {
         node.red()
         var _node = node
         while (_node != root && _node.parent.isRed()) {
@@ -79,42 +74,7 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
         root.black()
     }
 
-    private fun _2_3_tree_add(node: TreeNode<E>) {
-        node.red()
-        var _node = node
-        while (_node != root && _node.isRed() && (_node.parent.isRed() || _node.isLeftChild)) {
-            if (_node.parent.isRed()) {
-                // 双红
-                if (_node.isLeftChild) {
-                    // RL
-                    _node = _node.parent!!
-                    rotateRight(_node)
-                }
-                // RR
-                _node.black()
-                rotateLeft(_node.grandparent.black())
-                _node = _node.parent!!
-            } else {
-                if (_node.sibling.isRed()) {
-                    // 两个红节点发生上溢
-                    _node.black()
-                    _node.sibling.black()
-                    _node = _node.parent.red()!!
-                } else if (_node.isLeftChild) {
-                    // 红节点是左子节点
-                    _node.black()
-                    rotateRight(_node.parent.red()!!)
-                }
-            }
-        }
-        root.black()
-    }
-
     override fun afterRemove(node: TreeNode<E>) {
-        _2_3_4_tree_remove(node)
-    }
-
-    private fun _2_3_4_tree_remove(node: TreeNode<E>) {
         var _node = node
         while (_node != root && _node.isBlack()) {
             if (_node.isLeftChild || _node.parent?.left == null) {

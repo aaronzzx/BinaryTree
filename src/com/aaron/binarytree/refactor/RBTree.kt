@@ -25,11 +25,19 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
         }
 
         private fun <E> TreeNode<E>?.red(): TreeNode<E>? {
-            return toRBNode()?.also { it.color = RED }
+            return this.color(RED)
         }
 
         private fun <E> TreeNode<E>?.black(): TreeNode<E>? {
-            return toRBNode()?.also { it.color = BLACK }
+            return this.color(BLACK)
+        }
+
+        private fun <E> TreeNode<E>?.color(color: Boolean): TreeNode<E>? {
+            return toRBNode()?.also { it.color = color }
+        }
+
+        private fun <E> TreeNode<E>?.color(): Boolean {
+            return toRBNode()?.color ?: BLACK
         }
 
         private fun <E> TreeNode<E>?.toRBNode(): RBNode<E>? {
@@ -38,11 +46,11 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
     }
 
     override fun afterAdd(node: TreeNode<E>) {
-        _2_3_tree(node)
-//        _2_3_4_tree(node)
+//        _2_3_tree_add(node)
+        _2_3_4_tree_add(node)
     }
 
-    private fun _2_3_4_tree(node: TreeNode<E>) {
+    private fun _2_3_4_tree_add(node: TreeNode<E>) {
         node.red()
         var _node = node
         while (_node != root && _node.parent.isRed()) {
@@ -71,7 +79,7 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
         root.black()
     }
 
-    private fun _2_3_tree(node: TreeNode<E>) {
+    private fun _2_3_tree_add(node: TreeNode<E>) {
         node.red()
         var _node = node
         while (_node != root && _node.isRed() && (_node.parent.isRed() || _node.isLeftChild)) {
@@ -100,6 +108,66 @@ class RBTree<E>(comparator: Comparator<E>? = null) : BBST<E>(comparator) {
             }
         }
         root.black()
+    }
+
+    override fun afterRemove(node: TreeNode<E>) {
+        _2_3_4_tree_remove(node)
+    }
+
+    private fun _2_3_4_tree_remove(node: TreeNode<E>) {
+        var _node = node
+        while (_node != root && _node.isBlack()) {
+            if (_node.isLeftChild || _node.parent?.left == null) {
+                var sibling = _node.parent?.right
+                if (sibling.isRed()) {
+                    sibling.black()
+                    _node.parent.red()
+                    rotateLeft(_node.parent)
+                    sibling = _node.parent?.right
+                }
+                if (sibling?.left.isBlack() && sibling?.right.isBlack()) {
+                    sibling.red()
+                    _node = _node.parent ?: break
+                } else {
+                    if (sibling?.right.isBlack()) {
+                        sibling?.left.black()
+                        sibling.red()
+                        rotateRight(sibling)
+                        sibling = _node.parent?.right
+                    }
+                    sibling.color(_node.parent.color())
+                    _node.parent.black()
+                    sibling?.right.black()
+                    rotateLeft(_node.parent)
+                    _node = root!!
+                }
+            } else {
+                var sibling = _node.parent?.left
+                if (sibling.isRed()) {
+                    sibling.black()
+                    _node.parent.red()
+                    rotateRight(_node.parent)
+                    sibling = _node.parent?.left
+                }
+                if (sibling?.left.isBlack() && sibling?.right.isBlack()) {
+                    sibling.red()
+                    _node = _node.parent ?: break
+                } else {
+                    if (sibling?.left.isBlack()) {
+                        sibling?.right.black()
+                        sibling.red()
+                        rotateLeft(sibling)
+                        sibling = _node.parent?.left
+                    }
+                    sibling.color(_node.parent.color())
+                    _node.parent.black()
+                    sibling?.left.black()
+                    rotateRight(_node.parent)
+                    _node = root!!
+                }
+            }
+        }
+        _node.black()
     }
 
     override fun createNode(item: E, parent: TreeNode<E>?): TreeNode<E> {

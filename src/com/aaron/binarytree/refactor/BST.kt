@@ -86,7 +86,7 @@ open class BST<E>(private var comparator: Comparator<E>? = null) : BinaryTree<E>
             } else {
                 _node.parent!!.right = replacement
             }
-            afterRemove(_node)
+            afterRemove(replacement)
         } else if (_node.parent == null) {
             root = null
             afterRemove(_node)
